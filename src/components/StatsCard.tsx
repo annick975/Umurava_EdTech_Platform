@@ -1,52 +1,60 @@
-import { FC } from "react";
-import { ChevronDown } from "lucide-react";
+import type React from "react";
+import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { TypeIcon as type, type LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
+  icon: LucideIcon;
   title: string;
   value: string;
-  percentage?: string;
-  dateRange?: string;
-  showDateSelector?: boolean;
+  percentage: string;
+  period: string;
 }
 
-const StatsCard: FC<StatsCardProps> = ({
+const StatsCard: React.FC<StatsCardProps> = ({
+  icon: Icon,
   title,
   value,
   percentage,
-  dateRange = "Last 30 days",
-  showDateSelector = true,
+  period,
 }) => {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#4339CA]/10 rounded-lg flex items-center justify-center">
-            <svg
-              className="w-5 h-5 text-[#4339CA]"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path d="M20 6H4V8H20V6Z" fill="currentColor" />
-              <path d="M20 10H4V12H20V10Z" fill="currentColor" />
-              <path d="M20 14H4V16H20V14Z" fill="currentColor" />
-            </svg>
-          </div>
-          <span className="text-gray-600 text-sm">{title}</span>
+    <Card className="p-4 pb-12 border-[#E4E7EC]">
+      <div className="flex justify-end mb-4 text-[#98A2B3]">
+        <Select defaultValue={period.toLowerCase().replace(" ", "-")}>
+          <SelectTrigger className="w-[140px] h-9 text-xs border-0 bg-gray-50">
+            <SelectValue placeholder={period} />
+          </SelectTrigger>
+          <SelectContent className="text-[#98A2B3]">
+            <SelectItem value="this-week">This Week</SelectItem>
+            <SelectItem value="last-week">Last 30 days</SelectItem>
+            <SelectItem value="this-month">Last Year</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-start gap-4">
+        <div className="w-12 h-12 bg-[#D0E0FC] rounded-full flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5 text-[#2B71F0]" />
         </div>
-        {showDateSelector && (
-          <button className="flex items-center text-sm text-gray-500 hover:text-gray-700">
-            {dateRange}
-            <ChevronDown className="w-4 h-4 ml-1" />
-          </button>
-        )}
+        <div className="space-y-1">
+          <p className="text-sm text-[#667185]">{title}</p>
+          <div className="flex items-baseline space-x-2">
+            <span className="text-2xl font-semibold text-[#101928]">
+              {value}
+            </span>
+            <span className="text-sm text-[#2B71F0] bg-[#E7F6EC] rounded-md">
+              ↑ {percentage}
+            </span>
+          </div>
+        </div>
       </div>
-      <div className="flex items-end gap-3">
-        <span className="text-2xl font-semibold">{value}</span>
-        {percentage && (
-          <span className="text-green-500 text-sm mb-1">↑ {percentage}</span>
-        )}
-      </div>
-    </div>
+    </Card>
   );
 };
 

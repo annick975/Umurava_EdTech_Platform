@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { FC } from "react";
-import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar";
-import ChallengeCard from "@/components/ChallengeCard";
+import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar_Talent";
+import ChallengeCard from "@/components/ChallengeCard_Talent";
 import Header from "@/components/Header";
 import { FileText, CheckCircle, Clock, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";

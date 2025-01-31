@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { FC } from "react";
-import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar";
+import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar_Talent";
 import Link from "next/link";
 import Image from "next/image";
 import umurava from "@/../../public/umurava.png";

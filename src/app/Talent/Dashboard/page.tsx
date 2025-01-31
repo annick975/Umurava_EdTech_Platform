@@ -3,8 +3,8 @@
 import { useState } from "react";
 import type { FC } from "react";
 import Link from "next/link";
-import { WhatsAppModalProvider, Sidebar } from "@/components/Sidebar";
-import ChallengeCard from "@/components/ChallengeCard";
+import { WhatsAppModalProvider, Sidebar } from "@/components/Sidebar_Talent";
+import ChallengeCard from "@/components/ChallengeCard_Talent";
 import {
   Eye,
   ChevronRight,
@@ -33,7 +33,7 @@ const DashboardPage: FC = () => {
       seniority: "(Junior, Intermediate, Senior)",
       timeline: "15 Days",
     },
-     {
+    {
       title: "Design a Dashboard for SokoFund, Fintech Product",
       skills: ["UI/UX Design", "User Research", "User Research"],
       seniority: "(Junior, Intermediate, Senior)",

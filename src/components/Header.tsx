@@ -35,13 +35,14 @@ const Header: FC<HeaderProps> = ({ onMenuClick }) => {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-gray-600" />
         </Button>
-        <div className="relative">
+        <div>
           <Image
             src="/pp.jpeg"
             alt="Profile"
-            className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full"
+            className="rounded-full object-cover"
             width={40}
             height={40}
+            sizes="(max-width: 640px) 32px, (max-width: 1024px) 36px, 40px"
           />
         </div>
       </div>
