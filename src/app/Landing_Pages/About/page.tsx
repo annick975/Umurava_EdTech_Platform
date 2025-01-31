@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Header } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import StorySection from "./aboutSections/story";

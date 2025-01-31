@@ -21,7 +21,7 @@ export function CallToAction() {
               Ready to transform your learning institution?
             </h2>
             <Button className="bg-white hover:bg-white/95 text-[#2C71F0] hover:text-[#2C71F0]/90 font-semibold px-8 py-3 h-auto text-base rounded-lg">
-              Let's Partner
+              Let&apos; s Partner
             </Button>
           </div>
         </div>

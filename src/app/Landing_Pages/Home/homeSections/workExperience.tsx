@@ -42,7 +42,8 @@ export default function WorkExperienceSection() {
           </h2>
           <p className="text-[#687588] text-lg font-medium">
             Join Skills Challenges Program to accelerate your career growth and
-            become part of Africa's largest workforce of digital professionals.
+            become part of Africa&apos;s largest workforce of digital
+            professionals.
           </p>
         </motion.div>
 

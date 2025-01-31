@@ -38,7 +38,8 @@ export default function ChallengesPage() {
           </h2>
           <p className="text-gray-600 text-lg">
             Join Skills Challenges Program to accelerate your career growth and
-            become part of Africa's largest workforce of digital professionals.
+            become part of Africa&apos;s largest workforce of digital
+            professionals.
           </p>
         </div>
 

@@ -7,7 +7,7 @@ interface UnlockSkillProps {
   className?: string;
 }
 
-const UnlockSkill: React.FC<UnlockSkillProps> = ({ className }) => {
+const UnlockSkill: React.FC<UnlockSkillProps> = ({}) => {
   return (
     <section className="py-16 sm:py-24">
       <div className="max-w-[1400px] mx-auto px-4">

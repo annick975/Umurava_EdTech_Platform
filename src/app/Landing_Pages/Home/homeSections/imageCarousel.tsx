@@ -4,18 +4,6 @@ import { useState, useEffect } from "react";
 import { ArrowRightCircle } from "lucide-react";
 import Image from "next/image";
 
-const skills = [
-  "UI/UX Design",
-  "Data Science",
-  "Graphic Design",
-  "Data Analysis & Research",
-  "Animation",
-  "Videography & Photography",
-  "AI & Machine Learning",
-  "Web3",
-  "Digital Marketing & Communications",
-];
-
 const slides = [
   {
     logo: "/sfLogo.png",

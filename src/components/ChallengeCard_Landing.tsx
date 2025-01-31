@@ -28,7 +28,6 @@ interface ChallengeCardProps {
 }
 
 const ChallengeCard: FC<ChallengeCardProps> = ({
-  id = "1",
   title,
   skills,
   seniority,

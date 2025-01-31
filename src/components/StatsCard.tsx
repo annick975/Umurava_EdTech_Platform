@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TypeIcon as type, type LucideIcon } from "lucide-react";
+import {  type LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
   icon: LucideIcon;
