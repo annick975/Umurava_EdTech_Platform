@@ -70,7 +70,7 @@ export default function Stats() {
               whileInView={{ scale: 1 }}
               transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
               viewport={{ once: true }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold mb-2"
             >
               {stat.value}
             </motion.p>
