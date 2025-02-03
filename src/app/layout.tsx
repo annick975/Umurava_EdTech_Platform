@@ -1,6 +1,7 @@
 import { Work_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const workSans = Work_Sans({
   subsets: ["latin"],
@@ -12,7 +13,6 @@ export const metadata: Metadata = {
   description: "Build Work Experience through Skills Challenges",
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,7 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${workSans.className} antialiased`}>{children}</body>
+      <body className={`${workSans.className} antialiased`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
