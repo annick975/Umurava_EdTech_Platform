@@ -86,22 +86,21 @@ const handleEdit = () => {
       console.log("Challenge Data:", challengeData);
     }
   }, [challengeData]);
+ if (isLoading) {
+   return (
+     <div className="flex justify-center items-center h-64">
+       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
+     </div>
+   );
+ }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
-      </div>
-    );
-  }
+ if (isError || !challengeData) {
+   return (
+     <div className="text-center text-red-500">Error loading challenge</div>
+   );
+ }
 
-  if (isError || !challengeData) {
-    return (
-      <div className="text-center text-red-500">Error loading challenges</div>
-    );
-  }
-
-  const challenge = challengeData.challenge || challengeData;
+  const challenge = challengeData.challenge;
 
   const participants = [
     {
@@ -241,12 +240,12 @@ const handleEdit = () => {
                     {[
                       {
                         icon: Mail,
-                        title: challenge.contactEmail,
+                        title: challenge.email,
                         subtitle: "Contact Email",
                       },
                       {
                         icon: Monitor,
-                        title: challenge.skills?.join(", "),
+                        title: challenge.skillsNeeded?.join(", "),
                         subtitle: "Challenge Category",
                       },
                       {
@@ -256,7 +255,7 @@ const handleEdit = () => {
                       },
                       {
                         icon: DollarSign,
-                        title: challenge.moneyPrize,
+                        title: challenge.prize,
                         subtitle: "Money Prize",
                       },
                     ].map((item, index) => (

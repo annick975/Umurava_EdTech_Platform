@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
+export interface ChallengeResponse {
+  challenge: Challenge;
+}
+
 export interface Challenge {
   id?: string
   title: string
@@ -32,7 +36,7 @@ export const challengesApi = createApi({
         method: "GET",
       }),
     }),
-    getChallengeById: builder.query<Challenge, string>({
+      getChallengeById: builder.query<ChallengeResponse, string>({
       query: (id) => ({
         url: `/challenges/${id}`,
         method: "GET",
