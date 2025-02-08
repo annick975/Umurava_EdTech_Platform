@@ -16,7 +16,12 @@ export interface Challenge {
   status: string
   timeline: string
 }
+interface ChallengeAnalytics {
+  totalChallenges: number;
+  activeChallenges: number;
+  completedChallenges: number;
 
+}
 export const challengesApi = createApi({
   reducerPath: "challengesApi",
   baseQuery: fetchBaseQuery({ baseUrl: "https://umurava-challenge-be.onrender.com/api/" }),
@@ -33,12 +38,12 @@ export const challengesApi = createApi({
         method: "GET",
       }),
     }),
-    getChallengeAnalytics: builder.query<any, void>({
-      query: () => ({
-        url: "challenges/analytics",
-        method: "GET",
-      }),
-    }),
+    getChallengeAnalytics: builder.query<ChallengeAnalytics, void>({
+  query: () => ({
+    url: "challenges/analytics",
+    method: "GET",
+  }),
+}),
     createChallenge: builder.mutation<Challenge, Partial<Challenge>>({
       query: (newChallenge) => {
         const transformedData = {

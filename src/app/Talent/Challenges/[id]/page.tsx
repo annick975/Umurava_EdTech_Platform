@@ -29,13 +29,18 @@ const ChallengeDetailsPage: FC = () => {
       }
     }, [challengeData]);
   
-    if (isLoading) {
-      return <div>Loading challenge details...</div>;
-    }
-  
-    if (isError || !challengeData) {
-      return <div>Error loading challenge details</div>;
-    }
+   if (isLoading) {
+     return (
+       <div className="flex justify-center items-center h-64">
+         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
+       </div>
+     );
+   }
+ if (isError || !challengeData) {
+   return (
+     <div className="text-center text-red-500">Error loading challenges</div>
+   );
+ }
   
     const challenge = challengeData.challenge || challengeData;
 

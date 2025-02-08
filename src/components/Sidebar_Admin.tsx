@@ -95,7 +95,7 @@ export function Sidebar({ className, isOpen, onClose }: SidebarProps) {
       <nav className="space-y-1">
         <Link
           href="/Admin/Dashboard"
-          className={getLinkClassName("/Talent/Dashboard")}
+          className={getLinkClassName("/Admin/Dashboard")}
           onClick={handleNavigation}
         >
           <HomeIcon className="h-5 w-5" />
@@ -103,7 +103,7 @@ export function Sidebar({ className, isOpen, onClose }: SidebarProps) {
         </Link>
         <Link
           href="/Admin/Challenges"
-          className={getLinkClassName("/Talent/Challenges")}
+          className={getLinkClassName("/Admin/Challenges")}
           onClick={handleNavigation}
         >
           <ClipboardList className="h-6 w-6" />

@@ -25,7 +25,11 @@ import {
 } from "@/components/ui/select";
 import { useCreateChallengeMutation } from "@/lib/api/challengesApi";
 import { useRouter } from "next/navigation";
-
+interface ApiError {
+  status?: number;
+  data?: any;
+  message?: string;
+}
 export default function CreateChallengePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -96,33 +100,31 @@ export default function CreateChallengePage() {
       setErrorMessage("Please fill in all required fields correctly");
       return;
     }
+try {
+  console.log("Submitting challenge data:", formData);
+  const result = await createChallenge(formData).unwrap();
+  console.log("Challenge created successfully:", result);
+  router.push("/Admin/Challenges");
+} catch (error: unknown) {
+  const err = error as ApiError;
+  console.error("Challenge creation failed:", {
+    error: err,
+    status: err.status,
+    data: err.data,
+    message: err.message,
+  });
 
-    try {
-      console.log("Submitting challenge data:", formData);
+  let errorMessage = "Unknown error occurred when creating the challenge";
+  if (err.status === 400) {
+    errorMessage = "Invalid challenge data. Please check all fields.";
+  } else if (err.status === 401) {
+    errorMessage = "You are not authorized to create challenges.";
+  } else if (err.status === 500) {
+    errorMessage = "Server error. Please try again later.";
+  }
 
-      const result = await createChallenge(formData).unwrap();
-      console.log("Challenge created successfully:", result);
-
-      router.push("/Admin/Challenges");
-    } catch (err: any) {
-      console.error("Challenge creation failed:", {
-        error: err,
-        status: err.status,
-        data: err.data,
-        message: err.message,
-      });
-
-      let errorMessage = "Unknown error occurred when creating the challenge";
-      if (err.status === 400) {
-        errorMessage = "Invalid challenge data. Please check all fields.";
-      } else if (err.status === 401) {
-        errorMessage = "You are not authorized to create challenges.";
-      } else if (err.status === 500) {
-        errorMessage = "Server error. Please try again later.";
-      }
-
-      setErrorMessage(errorMessage);
-    }
+  setErrorMessage(errorMessage);
+}
   };
 
   const skillOptions = [
