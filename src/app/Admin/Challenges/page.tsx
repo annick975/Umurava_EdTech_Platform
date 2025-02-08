@@ -34,9 +34,7 @@ const ChallengesPage: FC = () => {
     limit: ITEMS_PER_PAGE,
   });
   const challenges = challengesData?.challenges;
-  const totalChallenges = challengesData?.total || 0;
-  const totalPages = Math.ceil(totalChallenges / ITEMS_PER_PAGE);
-
+  
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const filterCounts = {
@@ -45,6 +43,9 @@ const ChallengesPage: FC = () => {
     open: challenges?.filter((c) => c.status === "open").length || 0,
     ongoing: challenges?.filter((c) => c.status === "ongoing").length || 0,
   };
+  const totalChallenges = filterCounts.all;
+  const totalPages = Math.ceil(totalChallenges / ITEMS_PER_PAGE);
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
