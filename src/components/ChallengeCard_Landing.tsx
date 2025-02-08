@@ -5,6 +5,7 @@ import type { FC } from "react";
 import logo from "@/../../public/umurava.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { Challenge } from "@/lib/api/challengesApi";
 
 interface SkillBadgeProps {
   label: string;
@@ -27,11 +28,11 @@ interface ChallengeCardProps {
   timeline: string;
 }
 
-const ChallengeCard: FC<ChallengeCardProps> = ({
+const ChallengeCard: FC<Challenge> = ({
   title,
-  skills,
+  skillsNeeded,
   seniority,
-  timeline,
+  duration,
 }) => {
   return (
     <div className="bg-white rounded-xl p-4 border border-[#E4E7EC]">
@@ -55,7 +56,7 @@ const ChallengeCard: FC<ChallengeCardProps> = ({
       <div className="mb-4">
         <p className="text-xs font-medium text-black mb-2">Skills Needed:</p>
         <div className="flex flex-wrap gap-2">
-          {skills.map((skill, index) => (
+          {skillsNeeded?.map((skill, index) => (
             <SkillBadge key={index} label={skill} />
           ))}
         </div>
@@ -71,7 +72,7 @@ const ChallengeCard: FC<ChallengeCardProps> = ({
       <div className="mb-4 py-2">
         <p className="text-xs ">
           <span className="text-black font-medium">Timeline: </span>
-          <span className="text-gray-600">{timeline}</span>
+          <span className="text-gray-600">{duration}</span>
         </p>
       </div>
 

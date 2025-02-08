@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
+
 export function Footer() {
   return (
     <footer className="bg-[#000C2D] text-white py-12">
@@ -82,16 +83,38 @@ export function Footer() {
           <div className="md:col-span-3">
             <h3 className="text-xl font-semibold mb-6">Quick Links</h3>
             <ul className="space-y-4">
-              {["Home", "Program", "About", "Contact Us"].map((item) => (
-                <li key={item}>
-                  <Link
-                    href={`/${item.toLowerCase().replace(" ", "-")}`}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link
+                  href="/"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/Landing_Pages/Challenges"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Program
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/Landing_Pages/About"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
           {/* Newsletter */}

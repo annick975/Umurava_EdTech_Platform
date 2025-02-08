@@ -13,22 +13,22 @@ import GetStarted from "./homeSections/getStarted";
 import UnlockSkill from "./homeSections/unlockSkill";
 
 export default function Home() {
-
-
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
-      <HeroSection />
-      <WorkExperienceSection />
-      <Stats />
-      <Skills />
-      <Carousel/>
-      <ChallengesPage />
-      <Benefits />
-      <Testimonials />
-      <GetStarted />
-      <UnlockSkill />
+      <main className="max-w-full">
+        <HeroSection />
+        <WorkExperienceSection />
+        <Stats />
+        <Skills />
+        <Carousel />
+        <ChallengesPage />
+        <Benefits />
+        <Testimonials />
+        <GetStarted />
+        <UnlockSkill />
+      </main>
       <Footer />
-    </>
+    </div>
   );
 }

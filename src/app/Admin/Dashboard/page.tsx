@@ -14,32 +14,24 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import StatsCard from "@/components/StatsCard";
+import { useGetChallengesQuery } from "@/lib/api/challengesApi";
+
+const ITEMS_PER_PAGE = 3;
 
 const DashboardPage: FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+   const [currentPage, setCurrentPage] = useState(1);
+   const [activeFilter, setActiveFilter] = useState("all");
+  const {
+    data: challengesData,
+    isLoading,
+    isError,
+  } = useGetChallengesQuery({
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  });
+  const challenges = challengesData?.challenges;
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-  const challenges = [
-    {
-      title: "Design a Dashboard for SokoFund, Fintech Product",
-      skills: ["UI/UX Design", "User Research", "User Research"],
-      seniority: "(Junior, Intermediate, Senior)",
-      timeline: "15 Days",
-    },
-    {
-      title: "Design a Dashboard for SokoFund, Fintech Product",
-      skills: ["UI/UX Design", "User Research", "User Research"],
-      seniority: "(Junior, Intermediate, Senior)",
-      timeline: "15 Days",
-    },
-    {
-      title: "Design a Dashboard for SokoFund, Fintech Product",
-      skills: ["UI/UX Design", "User Research", "User Research"],
-      seniority: "(Junior, Intermediate, Senior)",
-      timeline: "15 Days",
-    },
-  ];
 
   return (
     <WhatsAppModalProvider>
@@ -113,11 +105,21 @@ const DashboardPage: FC = () => {
                   See all <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {challenges.map((challenge, index) => (
-                  <ChallengeCard key={index} {...challenge} />
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
+                </div>
+              ) : isError ? (
+                <div className="text-center text-red-500">
+                  Error loading challenges
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {challenges?.map((challenge) => (
+                    <ChallengeCard key={challenge.id} {...challenge} />
+                  ))}
+                </div>
+              )}
             </div>
           </main>
         </div>

@@ -14,36 +14,34 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import { useGetChallengesQuery } from "@/lib/api/challengesApi";
+
+const ITEMS_PER_PAGE = 3;
 
 const DashboardPage: FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+ const [currentPage, setCurrentPage] = useState(1);
+   const [activeFilter, setActiveFilter] = useState("all");
+   const {
+     data: challengesData,
+     isLoading,
+     isError,
+   } = useGetChallengesQuery({
+     page: currentPage,
+     limit: ITEMS_PER_PAGE,
+   });
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-  const challenges = [
-    {
-      title: "Design a Dashboard for SokoFund, Fintech Product",
-      skills: ["UI/UX Design", "User Research", "User Research"],
-      seniority: "(Junior, Intermediate, Senior)",
-      timeline: "15 Days",
-    },
-    {
-      title: "Design a Dashboard for SokoFund, Fintech Product",
-      skills: ["UI/UX Design", "User Research", "User Research"],
-      seniority: "(Junior, Intermediate, Senior)",
-      timeline: "15 Days",
-    },
-    {
-      title: "Design a Dashboard for SokoFund, Fintech Product",
-      skills: ["UI/UX Design", "User Research", "User Research"],
-      seniority: "(Junior, Intermediate, Senior)",
-      timeline: "15 Days",
-    },
-  ];
-
+    const challenges = challengesData?.challenges;
+      const filterCounts = {
+        all: challenges?.length || 0,
+        completed:
+          challenges?.filter((c) => c.status === "completed").length || 0,
+        open: challenges?.filter((c) => c.status === "open").length || 0,
+        ongoing: challenges?.filter((c) => c.status === "ongoing").length || 0,
+      };
   return (
     <WhatsAppModalProvider>
-      <div className="flex min-h-screen bg-[#F8F9FB]">
+      <div className="flex min-h-screen bg-[#F9FAFB]">
         <Sidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
@@ -67,9 +65,21 @@ const DashboardPage: FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
               {[
-                { title: "Completed Challenges", value: "05", icon: FileCheck },
-                { title: "Open Challenges", value: "200", icon: ClipboardList },
-                { title: "Ongoing Challenges", value: "200", icon: Clock },
+                {
+                  title: "Completed Challenges",
+                  value: filterCounts.completed,
+                  icon: FileCheck,
+                },
+                {
+                  title: "Open Challenges",
+                  value: filterCounts.all,
+                  icon: ClipboardList,
+                },
+                {
+                  title: "Ongoing Challenges",
+                  value: filterCounts.ongoing,
+                  icon: Clock,
+                },
               ].map((stat, index) => (
                 <div
                   key={index}
@@ -154,11 +164,21 @@ const DashboardPage: FC = () => {
                   </Button>
                 </Link>
               </div>
+                {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
+              </div>
+            ) : isError ? (
+              <div className="text-center text-red-500">
+                Error loading challenges
+              </div>
+            ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {challenges.map((challenge, index) => (
-                  <ChallengeCard key={index} {...challenge} />
+                {challenges?.map((challenge) => (
+                  <ChallengeCard key={challenge.id} {...challenge} />
                 ))}
               </div>
+            )}
             </div>
           </main>
         </div>

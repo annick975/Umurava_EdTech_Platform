@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar_Admin";
@@ -23,12 +24,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateChallengeMutation } from "@/lib/api/challengesApi";
-import { useRouter } from "next/navigation";
+import {
+  useUpdateChallengeMutation,
+  useGetChallengeByIdQuery,
+} from "@/lib/api/challengesApi";
+import type { Challenge } from "@/lib/api/challengesApi";
 
-export default function CreateChallengePage() {
+export default function UpdateChallengePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const { id } = useParams();
+  const router = useRouter();
+  const { data: challengeData, isLoading: isLoadingChallenge } =
+    useGetChallengeByIdQuery(id as string);
+  const [updateChallenge, { isLoading: isUpdating }] =
+    useUpdateChallengeMutation();
+
+  const [formData, setFormData] = useState<Partial<Challenge>>({
     title: "",
     deadline: "",
     duration: "",
@@ -37,14 +48,32 @@ export default function CreateChallengePage() {
     description: "",
     brief: "",
     tasks: "",
-    skillsNeeded: [] as string[],
+    skillsNeeded: [],
     otherSkill: "",
     seniority: "",
   });
 
-  const [createChallenge, { isLoading, isError, error }] =
-    useCreateChallengeMutation();
-  const router = useRouter();
+  useEffect(() => {
+    if (challengeData?.challenge) {
+      // Access the nested challenge object from the response
+      const challenge = challengeData.challenge;
+      setFormData({
+        title: challenge.title || "",
+        deadline: challenge.deadline?.split("T")[0] || "", // Format date for input
+        duration: challenge.duration || "",
+        prize: challenge.moneyPrize || "",
+        email: challenge.contactEmail || "",
+        description: challenge.description || "",
+        brief: challenge.brief || "",
+        tasks: challenge.tasks || "",
+        skillsNeeded: challenge.skillsNeeded || [],
+        seniority: Array.isArray(challenge.seniority)
+          ? challenge.seniority[0]
+          : challenge.seniority || "",
+        otherSkill: "",
+      });
+    }
+  }, [challengeData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -59,71 +88,28 @@ export default function CreateChallengePage() {
 
   const handleSkillsChange = (skill: string) => {
     setFormData((prev) => {
-      const updatedSkills = prev.skillsNeeded.includes(skill)
+      const updatedSkills = prev.skillsNeeded?.includes(skill)
         ? prev.skillsNeeded.filter((s) => s !== skill)
-        : [...prev.skillsNeeded, skill];
+        : [...(prev.skillsNeeded || []), skill];
       return { ...prev, skillsNeeded: updatedSkills };
     });
   };
 
-  const validateFormData = (data: typeof formData) => {
-    const errors: Record<string, string> = {};
-
-    if (!data.title?.trim()) errors.title = "Title is required";
-    if (!data.deadline) errors.deadline = "Deadline is required";
-    if (!data.duration?.trim()) errors.duration = "Duration is required";
-    if (!data.prize?.trim()) errors.prize = "Prize is required";
-    if (!data.email?.trim()) errors.email = "Email is required";
-    if (!data.description?.trim())
-      errors.description = "Description is required";
-    if (!data.brief?.trim()) errors.brief = "Brief is required";
-    if (!data.tasks?.trim()) errors.tasks = "Tasks are required";
-    if (!data.skillsNeeded?.length)
-      errors.skills = "At least one skill is required";
-    if (!data.seniority) errors.seniorityLevel = "Seniority level is required";
-
-    return Object.keys(errors).length > 0 ? errors : null;
-  };
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const validationErrors = validateFormData(formData);
-    if (validationErrors) {
-      console.error("Validation errors:", validationErrors);
-      setErrorMessage("Please fill in all required fields correctly");
-      return;
-    }
-
-    try {
-      console.log("Submitting challenge data:", formData);
-
-      const result = await createChallenge(formData).unwrap();
-      console.log("Challenge created successfully:", result);
-
-      router.push("/Admin/Challenges");
-    } catch (err: any) {
-      console.error("Challenge creation failed:", {
-        error: err,
-        status: err.status,
-        data: err.data,
-        message: err.message,
-      });
-
-      let errorMessage = "Unknown error occurred when creating the challenge";
-      if (err.status === 400) {
-        errorMessage = "Invalid challenge data. Please check all fields.";
-      } else if (err.status === 401) {
-        errorMessage = "You are not authorized to create challenges.";
-      } else if (err.status === 500) {
-        errorMessage = "Server error. Please try again later.";
-      }
-
-      setErrorMessage(errorMessage);
-    }
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    await updateChallenge({
+      id: id as string,
+      challenge: {
+        ...formData,
+        deadline: `${formData.deadline}T00:00:00.000Z`, // Add time component to the date
+      },
+    }).unwrap();
+    router.push(`/Admin/Challenges/${id}`);
+  } catch (error) {
+    console.error("Failed to update challenge:", error);
+  }
+};
 
   const skillOptions = [
     "UX/UI Design",
@@ -134,6 +120,14 @@ export default function CreateChallengePage() {
     "Other",
   ];
   const seniorityLevels = ["Junior", "Mid", "Senior"];
+
+  if (isLoadingChallenge) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-lg text-gray-600">Loading challenge data...</p>
+      </div>
+    );
+  }
 
   return (
     <WhatsAppModalProvider>
@@ -148,7 +142,7 @@ export default function CreateChallengePage() {
           <main className="p-4 sm:p-6 lg:p-8">
             <div className="flex items-center gap-2 mb-8 text-sm">
               <Link
-                href="/Admin/Challenges"
+                href={`/Admin/Challenges/${id}`}
                 className="flex items-center text-gray-500 hover:text-gray-700"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -162,26 +156,25 @@ export default function CreateChallengePage() {
                 Challenges & Hackathons
               </Link>
               <span className="text-gray-400">/</span>
-              <span className="text-[#2B71F0]">Create New Challenge</span>
+              <span className="text-[#2B71F0]">Update Challenge</span>
             </div>
 
-            <Card className="max-w-3xl mx-auto p-6">
+            <Card className="max-w-3xl mx-auto">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-semibold">
-                  Create New Challenge
+                  Update Challenge
                 </CardTitle>
                 <CardDescription>
-                  Fill out these details to build your broadcast
+                  Update the details of your challenge
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="title">Challenge/Hackathon Title</Label>
+                    <Label htmlFor="title">Challenge Title</Label>
                     <Input
                       id="title"
                       name="title"
-                      placeholder="Enter Title"
                       value={formData.title}
                       onChange={handleInputChange}
                       className="h-12"
@@ -205,7 +198,6 @@ export default function CreateChallengePage() {
                       <Input
                         id="duration"
                         name="duration"
-                        placeholder="Duration"
                         value={formData.duration}
                         onChange={handleInputChange}
                         className="h-12"
@@ -219,7 +211,6 @@ export default function CreateChallengePage() {
                       <Input
                         id="prize"
                         name="prize"
-                        placeholder="Prize"
                         value={formData.prize}
                         onChange={handleInputChange}
                         className="h-12"
@@ -231,7 +222,6 @@ export default function CreateChallengePage() {
                         id="email"
                         type="email"
                         name="email"
-                        placeholder="Email"
                         value={formData.email}
                         onChange={handleInputChange}
                         className="h-12"
@@ -241,13 +231,13 @@ export default function CreateChallengePage() {
 
                   <div className="space-y-2">
                     <Label>Skills Needed</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {skillOptions.map((skill) => (
                         <Button
                           key={skill}
                           type="button"
                           variant={
-                            formData.skillsNeeded.includes(skill)
+                            formData.skillsNeeded?.includes(skill)
                               ? "default"
                               : "outline"
                           }
@@ -258,7 +248,7 @@ export default function CreateChallengePage() {
                         </Button>
                       ))}
                     </div>
-                    {formData.skillsNeeded.includes("Other") && (
+                    {formData.skillsNeeded?.includes("Other") && (
                       <Input
                         name="otherSkill"
                         placeholder="Specify other skill"
@@ -270,7 +260,7 @@ export default function CreateChallengePage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="seniorityLevel">Seniority Level</Label>
+                    <Label htmlFor="seniority">Seniority Level</Label>
                     <Select
                       value={formData.seniority}
                       onValueChange={(value) =>
@@ -295,11 +285,9 @@ export default function CreateChallengePage() {
                     <Textarea
                       id="description"
                       name="description"
-                      placeholder="Enter text here..."
                       value={formData.description}
                       onChange={handleInputChange}
                       rows={4}
-                      maxLength={250}
                       className="min-h-[120px]"
                     />
                     <p className="text-xs text-gray-500">
@@ -312,11 +300,9 @@ export default function CreateChallengePage() {
                     <Textarea
                       id="brief"
                       name="brief"
-                      placeholder="Enter text here..."
                       value={formData.brief}
                       onChange={handleInputChange}
                       rows={3}
-                      maxLength={50}
                       className="min-h-[120px]"
                     />
                     <p className="text-xs text-gray-500">
@@ -329,11 +315,9 @@ export default function CreateChallengePage() {
                     <Textarea
                       id="tasks"
                       name="tasks"
-                      placeholder="Enter text here..."
                       value={formData.tasks}
                       onChange={handleInputChange}
                       rows={6}
-                      maxLength={500}
                       className="min-h-[120px]"
                     />
                     <p className="text-xs text-gray-500">
@@ -346,23 +330,18 @@ export default function CreateChallengePage() {
                       type="button"
                       variant="outline"
                       className="flex-1 h-12 border-[#2B71F0] text-[#2B71F0] hover:bg-[#2563EB]/5"
+                      onClick={() => router.back()}
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       className="flex-1 h-12 bg-[#2B71F0] hover:bg-[#2563EB]/90"
-                      disabled={isLoading}
+                      disabled={isUpdating}
                     >
-                      {isLoading ? "Creating..." : "Create Challenge"}
+                      {isUpdating ? "Updating..." : "Update Challenge"}
                     </Button>
                   </div>
-
-                  {errorMessage && (
-                    <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                      {errorMessage}
-                    </div>
-                  )}
                 </form>
               </CardContent>
             </Card>

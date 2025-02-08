@@ -1,21 +1,29 @@
 
 "use client";
-
+import { useState } from "react";
 import { Header } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import ChallengeCard from "@/components/ChallengeCard_Landing";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useGetChallengesQuery } from "@/lib/api/challengesApi";
+
+const ITEMS_PER_PAGE = 9;
 
 export default function ChallengesPage() {
-  const challenges = Array(12).fill({
-    id: "1",
-    title: "Design a Dashboard for SokoFund",
-    skills: ["UX/UI Design", "User Research", "User Testing"],
-    seniority: "Junior, Intermediate, Senior",
-    timeline: "15 Days",
-  });
 
+  const [currentPage] = useState(1);
+   
+    const {
+      data: challengesData,
+      isLoading,
+      isError,
+    } = useGetChallengesQuery({
+      page: currentPage,
+      limit: ITEMS_PER_PAGE,
+    });
+   const challenges = challengesData?.challenges;
+     
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -36,11 +44,21 @@ export default function ChallengesPage() {
           </div>
 
           {/* Challenge Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {challenges.map((challenge, index) => (
-              <ChallengeCard key={index} {...challenge} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
+            </div>
+          ) : isError ? (
+            <div className="text-center text-red-500">
+              Error loading challenges
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {challenges?.map((challenge, index) => (
+                <ChallengeCard key={index} {...challenge} />
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
