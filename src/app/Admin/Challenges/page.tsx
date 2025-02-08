@@ -20,7 +20,6 @@ import { useGetChallengesQuery } from "@/lib/api/challengesApi";
 
 const ITEMS_PER_PAGE = 9;
 
-
 const ChallengesPage: FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +33,7 @@ const ChallengesPage: FC = () => {
     limit: ITEMS_PER_PAGE,
   });
   const challenges = challengesData?.challenges;
-  
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const filterCounts = {
@@ -95,7 +94,7 @@ const ChallengesPage: FC = () => {
         <div className="flex-1 md:ml-80 w-full">
           <Header onMenuClick={toggleSidebar} />
 
-          <main className="p-4 sm:p-6 lg:p-8">
+          <main className="p-4 sm:p-6 lg:p-8 overflow-x-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
               <div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-1">
