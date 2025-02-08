@@ -75,8 +75,8 @@ export default function CreateChallengePage() {
     if (!data.title?.trim()) errors.title = "Title is required";
     if (!data.deadline) errors.deadline = "Deadline is required";
     if (!data.duration?.trim()) errors.duration = "Duration is required";
-    if (!data.moneyPrize?.trim()) errors.prize = "Prize is required";
-    if (!data.contactEmail?.trim()) errors.email = "Email is required";
+    if (!data.moneyPrize?.trim()) errors.moneyPrize = "Prize is required";
+    if (!data.contactEmail?.trim()) errors.contactEmail = "Email is required";
     if (!data.description?.trim())
       errors.description = "Description is required";
     if (!data.brief?.trim()) errors.brief = "Brief is required";
@@ -217,8 +217,8 @@ try {
                     <div className="space-y-2">
                       <Label htmlFor="prize">Money Prize</Label>
                       <Input
-                        id="prize"
-                        name="prize"
+                        id="moneyPrize"
+                        name="moneyPrize"
                         placeholder="Prize"
                         value={formData.moneyPrize}
                         onChange={handleInputChange}
@@ -228,9 +228,9 @@ try {
                     <div className="space-y-2">
                       <Label htmlFor="email">Contact Email</Label>
                       <Input
-                        id="email"
+                        id="contactEmail"
                         type="email"
-                        name="email"
+                        name="contactEmail"
                         placeholder="Email"
                         value={formData.contactEmail}
                         onChange={handleInputChange}
