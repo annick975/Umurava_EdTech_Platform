@@ -240,7 +240,7 @@ const handleEdit = () => {
                     {[
                       {
                         icon: Mail,
-                        title: challenge.email,
+                        title: challenge.contactEmail,
                         subtitle: "Contact Email",
                       },
                       {
@@ -255,7 +255,7 @@ const handleEdit = () => {
                       },
                       {
                         icon: DollarSign,
-                        title: challenge.prize,
+                        title: challenge.moneyPrize,
                         subtitle: "Money Prize",
                       },
                     ].map((item, index) => (
