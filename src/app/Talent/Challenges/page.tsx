@@ -87,7 +87,7 @@ const ChallengesPage: FC = () => {
 
   return (
     <WhatsAppModalProvider>
-      <div className="flex min-h-screen bg-[#F8F9FB]">
+      <div className="flex min-h-screen bg-[#F8F9FB] max-w-full overflow-x-hidden">
         <Sidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
