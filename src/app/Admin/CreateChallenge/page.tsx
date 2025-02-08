@@ -35,8 +35,8 @@ export default function CreateChallengePage() {
     title: "",
     deadline: "",
     duration: "",
-    prize: "",
-    email: "",
+    moneyPrize: "",
+    contactEmail: "",
     description: "",
     brief: "",
     tasks: "",
@@ -75,8 +75,8 @@ export default function CreateChallengePage() {
     if (!data.title?.trim()) errors.title = "Title is required";
     if (!data.deadline) errors.deadline = "Deadline is required";
     if (!data.duration?.trim()) errors.duration = "Duration is required";
-    if (!data.prize?.trim()) errors.prize = "Prize is required";
-    if (!data.email?.trim()) errors.email = "Email is required";
+    if (!data.moneyPrize?.trim()) errors.prize = "Prize is required";
+    if (!data.contactEmail?.trim()) errors.email = "Email is required";
     if (!data.description?.trim())
       errors.description = "Description is required";
     if (!data.brief?.trim()) errors.brief = "Brief is required";
@@ -220,7 +220,7 @@ try {
                         id="prize"
                         name="prize"
                         placeholder="Prize"
-                        value={formData.prize}
+                        value={formData.moneyPrize}
                         onChange={handleInputChange}
                         className="h-12"
                       />
@@ -232,7 +232,7 @@ try {
                         type="email"
                         name="email"
                         placeholder="Email"
-                        value={formData.email}
+                        value={formData.contactEmail}
                         onChange={handleInputChange}
                         className="h-12"
                       />
