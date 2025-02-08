@@ -43,8 +43,8 @@ export default function UpdateChallengePage() {
     title: "",
     deadline: "",
     duration: "",
-    prize: "",
-    email: "",
+    moneyPrize: "",
+    contactEmail: "",
     description: "",
     brief: "",
     tasks: "",
@@ -61,8 +61,8 @@ export default function UpdateChallengePage() {
         title: challenge.title || "",
         deadline: challenge.deadline?.split("T")[0] || "", // Format date for input
         duration: challenge.duration || "",
-        prize: challenge.moneyPrize || "",
-        email: challenge.contactEmail || "",
+        moneyPrize: challenge.moneyPrize || "",
+        contactEmail: challenge.contactEmail || "",
         description: challenge.description || "",
         brief: challenge.brief || "",
         tasks: challenge.tasks || "",
@@ -211,7 +211,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       <Input
                         id="prize"
                         name="prize"
-                        value={formData.prize}
+                        value={formData.moneyPrize}
                         onChange={handleInputChange}
                         className="h-12"
                       />
@@ -222,7 +222,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         id="email"
                         type="email"
                         name="email"
-                        value={formData.email}
+                        value={formData.contactEmail}
                         onChange={handleInputChange}
                         className="h-12"
                       />

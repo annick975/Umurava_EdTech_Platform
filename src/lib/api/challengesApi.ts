@@ -9,8 +9,8 @@ export interface Challenge {
   title: string
   deadline: string
   duration: string
-  prize: string
-  email: string
+  moneyPrize: string
+  contactEmail: string
   description: string
   brief: string
   tasks: string
@@ -54,8 +54,8 @@ export const challengesApi = createApi({
           title: newChallenge.title,
           deadline: newChallenge.deadline,
           duration: newChallenge.duration,
-          moneyPrize: newChallenge.prize,
-          contactEmail: newChallenge.email,
+          moneyPrize: newChallenge.moneyPrize,
+          contactEmail: newChallenge. contactEmail,
           description: newChallenge.description,
           brief: newChallenge.brief,
           tasks: newChallenge.tasks,
@@ -78,8 +78,8 @@ updateChallenge: builder.mutation<Challenge, { id: string; challenge: Partial<Ch
       title: challenge.title,
       deadline: new Date(challenge.deadline!).toISOString(), // Convert to ISO string
       duration: challenge.duration,
-      moneyPrize: challenge.prize,
-      contactEmail: challenge.email,
+      moneyPrize: challenge.moneyPrize,
+      contactEmail: challenge. contactEmail,
       description: challenge.description,
       brief: challenge.brief,
       tasks: challenge.tasks,

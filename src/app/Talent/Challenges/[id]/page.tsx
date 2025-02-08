@@ -10,7 +10,9 @@ import umurava from "@/../../public/umurava.png";
 import { Mail, Monitor, Calendar, DollarSign, ChevronLeft } from "lucide-react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { useGetChallengeByIdQuery } from "@/lib/api/challengesApi";
+import {
+  useGetChallengeByIdQuery,
+} from "@/lib/api/challengesApi";
 
 const ChallengeDetailsPage: FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -22,25 +24,25 @@ const ChallengeDetailsPage: FC = () => {
   } = useGetChallengeByIdQuery(id as string);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   useEffect(() => {
-    if (challengeData) {
-      console.log("Challenge Data:", challengeData);
-    }
-  }, [challengeData]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
-      </div>
-    );
-  }
-  if (isError || !challengeData) {
-    return (
-      <div className="text-center text-red-500">Error loading challenges</div>
-    );
-  }
-
-  const challenge = challengeData.challenge || challengeData;
+      if (challengeData) {
+        console.log("Challenge Data:", challengeData);
+      }
+    }, [challengeData]);
+  
+   if (isLoading) {
+     return (
+       <div className="flex justify-center items-center h-64">
+         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2B71F0]"></div>
+       </div>
+     );
+   }
+ if (isError || !challengeData) {
+   return (
+     <div className="text-center text-red-500">Error loading challenges</div>
+   );
+ }
+  
+    const challenge = challengeData.challenge || challengeData;
 
   return (
     <WhatsAppModalProvider>
@@ -131,7 +133,7 @@ const ChallengeDetailsPage: FC = () => {
                     {[
                       {
                         icon: Mail,
-                        title: challenge.email,
+                        title: challenge.contactEmail,
                         subtitle: "Contact Email",
                       },
                       {
@@ -146,7 +148,7 @@ const ChallengeDetailsPage: FC = () => {
                       },
                       {
                         icon: DollarSign,
-                        title: challenge.prize,
+                        title: challenge.moneyPrize,
                         subtitle: "Money Prize",
                       },
                     ].map((item, index) => (
