@@ -20,14 +20,6 @@ const SkillBadge: FC<SkillBadgeProps> = ({ label }) => (
   </Badge>
 );
 
-interface ChallengeCardProps {
-  id?: string;
-  title: string;
-  skills: string[];
-  seniority: string;
-  timeline: string;
-}
-
 const ChallengeCard: FC<Challenge> = ({
   title,
   skillsNeeded,

@@ -42,7 +42,7 @@ export default function CreateChallengePage() {
     seniority: "",
   });
 
-  const [createChallenge, { isLoading, isError, error }] =
+  const [createChallenge, { isLoading }] =
     useCreateChallengeMutation();
   const router = useRouter();
 

@@ -10,7 +10,6 @@ import umurava from "@/../../public/umurava.png";
 import { Mail, Monitor, Calendar, DollarSign, ChevronLeft } from "lucide-react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   useGetChallengeByIdQuery,
 } from "@/lib/api/challengesApi";

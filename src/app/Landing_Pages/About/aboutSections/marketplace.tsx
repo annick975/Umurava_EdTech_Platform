@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const MarketPlace = () => {
   return (
@@ -26,11 +27,14 @@ const MarketPlace = () => {
 
       {/* Right Section - Image */}
       <div className="w-full lg:w-1/2 mt-8 lg:mt-0">
-        <img
+        <Image
           src="/banner_img2.png"
           alt="Umurava Talent Marketplace UI"
+          height={500}
+          width={500}
           className="rounded-lg w-auto h-auto  object-cover max-h-[500px]"
         />
+       
       </div>
     </div>
   );

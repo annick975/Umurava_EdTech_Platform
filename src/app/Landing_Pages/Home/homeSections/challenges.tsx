@@ -7,11 +7,10 @@ import { useGetChallengesQuery } from "@/lib/api/challengesApi";
 const ITEMS_PER_PAGE = 3;
 
 export default function ChallengesPage() {
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage] = useState(1);
   const {
      data: challengesData,
-     isLoading,
-     isError,
+    
    } = useGetChallengesQuery({
      page: currentPage,
      limit: ITEMS_PER_PAGE,

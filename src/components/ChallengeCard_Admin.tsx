@@ -25,7 +25,6 @@ const ChallengeCard: FC<Challenge> = ({
   skillsNeeded,
   seniority,
   duration,
-  status,
 }) => {
   return (
     <div className="bg-white rounded-xl p-3 sm:p-4 border border-[#E4E7EC]">

@@ -20,8 +20,7 @@ const ITEMS_PER_PAGE = 3;
 
 const DashboardPage: FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
- const [currentPage, setCurrentPage] = useState(1);
-   const [activeFilter, setActiveFilter] = useState("all");
+ const [currentPage] = useState(1);
    const {
      data: challengesData,
      isLoading,
