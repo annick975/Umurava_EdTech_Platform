@@ -85,7 +85,7 @@ const ChallengesPage: FC = () => {
 
   return (
     <WhatsAppModalProvider>
-      <div className="flex min-h-screen bg-[#F8F9FB]">
+      <div className="flex min-h-screen bg-[#F8F9FB] max-w-full overflow-x-hidden">
         <Sidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
@@ -108,58 +108,55 @@ const ChallengesPage: FC = () => {
             </div>
 
             {/* Challenge Filters - Scrollable container for small screens */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 mb-6 sm:mb-8">
-                <div className="inline-flex items-center gap-3 min-w-max">
-                  {filters.map((filter) => (
-                    <Button
-                      key={filter.id}
-                      variant={
-                        activeFilter === filter.id ? "default" : "outline"
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 overflow-x-auto max-w-full">
+              <div className="flex items-center gap-3 flex-wrap">
+                {filters.map((filter) => (
+                  <Button
+                    key={filter.id}
+                    variant={activeFilter === filter.id ? "default" : "outline"}
+                    className={`
+                      flex items-center 
+                      h-12
+                      text-sm
+                      font-medium
+                      rounded-lg
+                      px-4
+                      whitespace-nowrap
+                      ${
+                        activeFilter === filter.id
+                          ? "bg-[#D0E0FC] hover:bg-[#2563EB]/90 text-[#101928]"
+                          : "bg-white hover:bg-gray-50 text-[#344054] border-gray-200"
                       }
+                    `}
+                    onClick={() => setActiveFilter(filter.id)}
+                  >
+                    <filter.icon className="w-4 h-4 mr-2 text-[#98A2B3]" />
+                    {filter.text}
+                    <span
                       className={`
-                        flex items-center 
-                        h-12
-                        text-sm
-                        font-medium
-                        rounded-lg
-                        px-4
+                        ml-2
+                        text-xs 
+                        px-2
+                        py-0.5 
+                        rounded-full
                         ${
                           activeFilter === filter.id
-                            ? "bg-[#D0E0FC] hover:bg-[#2563EB]/90 text-[#101928]"
-                            : "bg-white hover:bg-gray-50 text-[#344054] border-gray-200"
+                            ? "bg-[#2B71F0] text-white"
+                            : "bg-gray-100"
                         }
                       `}
-                      onClick={() => setActiveFilter(filter.id)}
                     >
-                      <filter.icon className="w-4 h-4 mr-2 text-[#98A2B3]" />
-                      {filter.text}
-                      <span
-                        className={`
-                          ml-2
-                          text-xs 
-                          px-2
-                          py-0.5 
-                          rounded-full
-                          ${
-                            activeFilter === filter.id
-                              ? "bg-[#2B71F0] text-white"
-                              : "bg-gray-100"
-                          }
-                        `}
-                      >
-                        {filter.count}
-                      </span>
-                    </Button>
-                  ))}
-                  <Link href="CreateChallenge">
-                    <Button className="flex items-center h-14 bg-[#2563EB] hover:bg-[#2563EB]/90 rounded-lg ml-auto">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create New Challenge
-                    </Button>
-                  </Link>
-                </div>
+                      {filter.count}
+                    </span>
+                  </Button>
+                ))}
               </div>
+              <Link href="CreateChallenge" className="mt-4 sm:mt-0">
+                <Button className="flex items-center h-14 bg-[#2563EB] hover:bg-[#2563EB]/90 rounded-lg whitespace-nowrap">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create New Challenge
+                </Button>
+              </Link>
             </div>
 
             {/* Challenges Grid */}
@@ -172,7 +169,7 @@ const ChallengesPage: FC = () => {
                 Error loading challenges
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-full">
                 {challenges?.map((challenge) => (
                   <ChallengeCard key={challenge.id} {...challenge} />
                 ))}
@@ -180,7 +177,7 @@ const ChallengesPage: FC = () => {
             )}
 
             {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 sm:mt-8">
+            <div className="flex flex-wrap justify-between items-center mt-6 sm:mt-8 gap-4">
               <Button
                 variant="ghost"
                 className="text-gray-500 hover:bg-gray-100 rounded-lg text-sm"
