@@ -27,7 +27,6 @@ import { useCreateChallengeMutation } from "@/lib/api/challengesApi";
 import { useRouter } from "next/navigation";
 interface ApiError {
   status?: number;
-  data?: any;
   message?: string;
 }
 export default function CreateChallengePage() {
@@ -110,7 +109,6 @@ try {
   console.error("Challenge creation failed:", {
     error: err,
     status: err.status,
-    data: err.data,
     message: err.message,
   });
 
