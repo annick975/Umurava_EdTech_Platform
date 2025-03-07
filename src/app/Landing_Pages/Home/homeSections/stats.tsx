@@ -17,43 +17,14 @@ export default function Stats() {
       viewport={{ once: true }}
       className="relative flex flex-col items-center justify-center bg-[#2B71F0] px-4 sm:px-8 md:px-12 lg:px-24 py-12 sm:py-16 md:py-20 lg:py-24 mx-4 sm:mx-8 md:mx-16 lg:mx-32 my-8 md:my-12 lg:my-16 rounded-2xl text-white overflow-hidden"
     >
-      <motion.svg
-        initial={{ rotate: -90, opacity: 0 }}
-        animate={{ rotate: 0, opacity: 0.14 }}
-        transition={{ duration: 1, delay: 0.3 }}
-        className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] sm:w-[40%] sm:h-[40%] md:w-[35%] md:h-[35%] lg:w-[30%] lg:h-[30%]"
-        viewBox="0 0 500 500"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          cx="250"
-          cy="250"
-          r="200"
-          stroke="white"
-          strokeWidth="65"
-          fill="none"
-        />
-      </motion.svg>
-
-      <motion.svg
-        initial={{ rotate: 90, opacity: 0 }}
-        animate={{ rotate: 0, opacity: 0.14 }}
-        transition={{ duration: 1, delay: 0.3 }}
-        className="absolute bottom-[-15%] left-[-5%] w-[50%] h-[50%] sm:w-[40%] sm:h-[40%] md:w-[35%] md:h-[35%] lg:w-[30%] lg:h-[30%]"
-        viewBox="0 0 400 400"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          cx="200"
-          cy="200"
-          r="150"
-          stroke="white"
-          strokeWidth="65"
-          fill="none"
-        />
-      </motion.svg>
+      <div
+        className="absolute bottom-0 left-0 w-[400px] h-[400px] border-[80px] border-[#FFFFFF]/10 rounded-full transform translate-y-1/2 -translate-x-1/2"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute -top-[20%] -right-[10%] w-[300px] h-[300px] border-[60px] border-[#FFFFFF]/10 rounded-full"
+        aria-hidden="true"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 md:gap-16 lg:gap-20 text-center relative z-10">
         {statsData.map((stat, index) => (

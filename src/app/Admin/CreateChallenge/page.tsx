@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar_Admin";
 import Header from "@/components/Header";
@@ -25,10 +25,28 @@ import {
 } from "@/components/ui/select";
 import { useCreateChallengeMutation } from "@/lib/api/challengesApi";
 import { useRouter } from "next/navigation";
+
 interface ApiError {
   status?: number;
   message?: string;
 }
+
+// Properly define FormErrors interface to match your form fields
+interface FormErrors {
+  title?: string;
+  deadline?: string;
+  duration?: string;
+  moneyPrize?: string;
+  contactEmail?: string;
+  description?: string;
+  brief?: string;
+  tasks?: string;
+  skillsNeeded?: string;
+  otherSkill?: string;
+  seniority?: string;
+  [key: string]: string | undefined; // Index signature to allow any string key
+}
+
 export default function CreateChallengePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,84 +63,204 @@ export default function CreateChallengePage() {
     seniority: "",
   });
 
-  const [createChallenge, { isLoading }] =
-    useCreateChallengeMutation();
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [createChallenge, { isLoading }] = useCreateChallengeMutation();
   const router = useRouter();
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+  // Function to validate a single field
+  const validateField = (name: string, value: any): string | null => {
+    switch (name) {
+      case "title":
+        return !value?.trim() ? "Title is required" : null;
+      case "deadline":
+        if (!value) return "Deadline is required";
+
+        // Check if deadline is future date
+        const selectedDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for fair comparison
+
+        return selectedDate <= today ? "Deadline must be a future date" : null;
+
+      case "duration":
+        return !value?.trim() ? "Duration is required" : null;
+      case "moneyPrize":
+        return !value?.trim() ? "Prize is required" : null;
+      case "contactEmail":
+        if (!value?.trim()) return "Email is required";
+        return !/^\S+@\S+\.\S+$/.test(value)
+          ? "Please enter a valid email address"
+          : null;
+      case "description":
+        if (!value?.trim()) return "Description is required";
+        if (value.length < 10)
+          return "Description must be at least 10 characters";
+        if (value.length > 250)
+          return "Description must be 250 characters or less";
+        return null;
+      case "brief":
+        if (!value?.trim()) return "Brief is required";
+        if (value.length < 10) return "Brief must be at least 10 characters";
+        if (value.length > 50) return "Brief must be 50 characters or less";
+        return null;
+      case "tasks":
+        if (!value?.trim()) return "Tasks are required";
+        if (value.length < 10) return "Tasks must be at least 10 characters";
+        if (value.length > 500) return "Tasks must be 500 characters or less";
+        return null;
+      case "skillsNeeded":
+        return !value || value.length === 0
+          ? "At least one skill is required"
+          : null;
+      case "otherSkill":
+        return formData.skillsNeeded.includes("Other") && !value?.trim()
+          ? "Please specify the other skill"
+          : null;
+      case "seniority":
+        return !value ? "Seniority level is required" : null;
+      default:
+        return null;
+    }
+  };
+
+  // Clear individual error when input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Validate field and clear error if valid
+    const error = validateField(name, value);
+    setFormErrors((prev) => ({
+      ...prev,
+      [name]: error || undefined,
+    }));
+
+    // Special case for otherSkill
+    if (name === "otherSkill" && formData.skillsNeeded.includes("Other")) {
+      const otherError = validateField("otherSkill", value);
+      setFormErrors((prev) => ({
+        ...prev,
+        otherSkill: otherError || undefined,
+      }));
+    }
   };
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Validate select field and clear error if valid
+    const error = validateField(name, value);
+    setFormErrors((prev) => ({
+      ...prev,
+      [name]: error || undefined,
+    }));
   };
 
   const handleSkillsChange = (skill: string) => {
-    setFormData((prev) => {
-      const updatedSkills = prev.skillsNeeded.includes(skill)
-        ? prev.skillsNeeded.filter((s) => s !== skill)
-        : [...prev.skillsNeeded, skill];
-      return { ...prev, skillsNeeded: updatedSkills };
+    const updatedSkills = formData.skillsNeeded.includes(skill)
+      ? formData.skillsNeeded.filter((s) => s !== skill)
+      : [...formData.skillsNeeded, skill];
+
+    setFormData((prev) => ({
+      ...prev,
+      skillsNeeded: updatedSkills,
+    }));
+
+    // Validate skills and clear error if valid
+    const error = validateField("skillsNeeded", updatedSkills);
+    setFormErrors((prev) => ({
+      ...prev,
+      skillsNeeded: error || undefined,
+    }));
+
+    // Handle "Other" skill special case
+    if (skill === "Other") {
+      if (!updatedSkills.includes("Other")) {
+        // If "Other" was deselected, clear the otherSkill error
+        setFormErrors((prev) => ({
+          ...prev,
+          otherSkill: undefined,
+        }));
+      } else if (!formData.otherSkill.trim()) {
+        // If "Other" was selected but no value specified, show error
+        setFormErrors((prev) => ({
+          ...prev,
+          otherSkill: "Please specify the other skill",
+        }));
+      }
+    }
+  };
+
+  const validateFormData = (data: typeof formData): FormErrors => {
+    const errors: FormErrors = {};
+
+    // Check each field
+    Object.entries(data).forEach(([key, value]) => {
+      const error = validateField(key, value);
+      if (error) errors[key] = error;
     });
+
+    return errors;
   };
 
-  const validateFormData = (data: typeof formData) => {
-    const errors: Record<string, string> = {};
-
-    if (!data.title?.trim()) errors.title = "Title is required";
-    if (!data.deadline) errors.deadline = "Deadline is required";
-    if (!data.duration?.trim()) errors.duration = "Duration is required";
-    if (!data.moneyPrize?.trim()) errors.moneyPrize = "Prize is required";
-    if (!data.contactEmail?.trim()) errors.contactEmail = "Email is required";
-    if (!data.description?.trim())
-      errors.description = "Description is required";
-    if (!data.brief?.trim()) errors.brief = "Brief is required";
-    if (!data.tasks?.trim()) errors.tasks = "Tasks are required";
-    if (!data.skillsNeeded?.length)
-      errors.skills = "At least one skill is required";
-    if (!data.seniority) errors.seniorityLevel = "Seniority level is required";
-
-    return Object.keys(errors).length > 0 ? errors : null;
-  };
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [apiErrorMessage, setApiErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate all fields at once
     const validationErrors = validateFormData(formData);
-    if (validationErrors) {
-      console.error("Validation errors:", validationErrors);
-      setErrorMessage("Please fill in all required fields correctly");
+    setFormErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setApiErrorMessage("Please fix all errors before submitting");
       return;
     }
-try {
-  console.log("Submitting challenge data:", formData);
-  const result = await createChallenge(formData).unwrap();
-  console.log("Challenge created successfully:", result);
-  router.push("/Admin/Challenges");
-} catch (error: unknown) {
-  const err = error as ApiError;
-  console.error("Challenge creation failed:", {
-    error: err,
-    status: err.status,
-    message: err.message,
-  });
 
-  let errorMessage = "Unknown error occurred when creating the challenge";
-  if (err.status === 400) {
-    errorMessage = "Invalid challenge data. Please check all fields.";
-  } else if (err.status === 401) {
-    errorMessage = "You are not authorized to create challenges.";
-  } else if (err.status === 500) {
-    errorMessage = "Server error. Please try again later.";
-  }
+    setApiErrorMessage(null);
 
-  setErrorMessage(errorMessage);
-}
+    try {
+      console.log("Submitting challenge data:", formData);
+      const result = await createChallenge(formData).unwrap();
+      console.log("Challenge created successfully:", result);
+
+      // Show success message
+      setShowSuccessMessage(true);
+
+      // Redirect after short delay to allow user to see success message
+      setTimeout(() => {
+        router.push("/Admin/Challenges");
+      }, 2000);
+    } catch (error: unknown) {
+      const err = error as ApiError;
+      console.error("Challenge creation failed:", {
+        error: err,
+        status: err.status,
+        message: err.message,
+      });
+
+      let errorMessage = "Unknown error occurred when creating the challenge";
+      if (err.status === 400) {
+        errorMessage = "Invalid challenge data. Please check all fields.";
+      } else if (err.status === 401) {
+        errorMessage = "You are not authorized to create challenges.";
+      } else if (err.status === 500) {
+        errorMessage = "Server error. Please try again later.";
+      }
+
+      setApiErrorMessage(errorMessage);
+      setShowSuccessMessage(false);
+    }
+  };
+
+  // Function to get tomorrow's date for the min attribute
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
   };
 
   const skillOptions = [
@@ -175,6 +313,13 @@ try {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {showSuccessMessage && (
+                  <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg flex items-center">
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Challenge created successfully! Redirecting...
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">Challenge/Hackathon Title</Label>
@@ -184,8 +329,15 @@ try {
                       placeholder="Enter Title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className="h-12"
+                      className={`h-12 ${
+                        formErrors.title ? "border-red-500" : ""
+                      }`}
                     />
+                    {formErrors.title && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {formErrors.title}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,9 +348,17 @@ try {
                         type="date"
                         name="deadline"
                         value={formData.deadline}
+                        min={getTomorrowDate()} // Set minimum date to tomorrow
                         onChange={handleInputChange}
-                        className="h-12"
+                        className={`h-12 ${
+                          formErrors.deadline ? "border-red-500" : ""
+                        }`}
                       />
+                      {formErrors.deadline && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {formErrors.deadline}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="duration">Duration</Label>
@@ -208,8 +368,15 @@ try {
                         placeholder="Duration"
                         value={formData.duration}
                         onChange={handleInputChange}
-                        className="h-12"
+                        className={`h-12 ${
+                          formErrors.duration ? "border-red-500" : ""
+                        }`}
                       />
+                      {formErrors.duration && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {formErrors.duration}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -222,8 +389,15 @@ try {
                         placeholder="Prize"
                         value={formData.moneyPrize}
                         onChange={handleInputChange}
-                        className="h-12"
+                        className={`h-12 ${
+                          formErrors.moneyPrize ? "border-red-500" : ""
+                        }`}
                       />
+                      {formErrors.moneyPrize && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {formErrors.moneyPrize}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Contact Email</Label>
@@ -234,8 +408,15 @@ try {
                         placeholder="Email"
                         value={formData.contactEmail}
                         onChange={handleInputChange}
-                        className="h-12"
+                        className={`h-12 ${
+                          formErrors.contactEmail ? "border-red-500" : ""
+                        }`}
                       />
+                      {formErrors.contactEmail && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {formErrors.contactEmail}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -252,20 +433,40 @@ try {
                               : "outline"
                           }
                           onClick={() => handleSkillsChange(skill)}
-                          className="justify-start"
+                          className={`justify-start ${
+                            formErrors.skillsNeeded &&
+                            !formData.skillsNeeded.length
+                              ? "border-red-500"
+                              : ""
+                          }`}
                         >
                           {skill}
                         </Button>
                       ))}
                     </div>
+                    {formErrors.skillsNeeded && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {formErrors.skillsNeeded}
+                      </p>
+                    )}
+
                     {formData.skillsNeeded.includes("Other") && (
-                      <Input
-                        name="otherSkill"
-                        placeholder="Specify other skill"
-                        value={formData.otherSkill}
-                        onChange={handleInputChange}
-                        className="mt-2"
-                      />
+                      <div className="mt-2">
+                        <Input
+                          name="otherSkill"
+                          placeholder="Specify other skill"
+                          value={formData.otherSkill}
+                          onChange={handleInputChange}
+                          className={
+                            formErrors.otherSkill ? "border-red-500" : ""
+                          }
+                        />
+                        {formErrors.otherSkill && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.otherSkill}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -277,7 +478,11 @@ try {
                         handleSelectChange("seniority", value)
                       }
                     >
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger
+                        className={`h-12 ${
+                          formErrors.seniority ? "border-red-500" : ""
+                        }`}
+                      >
                         <SelectValue placeholder="Select seniority level" />
                       </SelectTrigger>
                       <SelectContent>
@@ -288,6 +493,11 @@ try {
                         ))}
                       </SelectContent>
                     </Select>
+                    {formErrors.seniority && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {formErrors.seniority}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -295,16 +505,28 @@ try {
                     <Textarea
                       id="description"
                       name="description"
-                      placeholder="Enter text here..."
+                      placeholder="Enter text here... (minimum 10 characters)"
                       value={formData.description}
                       onChange={handleInputChange}
                       rows={4}
                       maxLength={250}
-                      className="min-h-[120px]"
+                      className={`min-h-[120px] ${
+                        formErrors.description ? "border-red-500" : ""
+                      }`}
                     />
-                    <p className="text-xs text-gray-500">
-                      Keep this simple of 250 character
-                    </p>
+                    <div className="flex justify-between">
+                      <p className="text-xs text-gray-500">
+                        Min 10, max 250 characters
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formData.description.length}/250
+                      </p>
+                    </div>
+                    {formErrors.description && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {formErrors.description}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -312,16 +534,28 @@ try {
                     <Textarea
                       id="brief"
                       name="brief"
-                      placeholder="Enter text here..."
+                      placeholder="Enter text here... (minimum 10 characters)"
                       value={formData.brief}
                       onChange={handleInputChange}
                       rows={3}
                       maxLength={50}
-                      className="min-h-[120px]"
+                      className={`min-h-[120px] ${
+                        formErrors.brief ? "border-red-500" : ""
+                      }`}
                     />
-                    <p className="text-xs text-gray-500">
-                      Keep this simple of 50 character
-                    </p>
+                    <div className="flex justify-between">
+                      <p className="text-xs text-gray-500">
+                        Min 10, max 50 characters
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formData.brief.length}/50
+                      </p>
+                    </div>
+                    {formErrors.brief && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {formErrors.brief}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -329,16 +563,28 @@ try {
                     <Textarea
                       id="tasks"
                       name="tasks"
-                      placeholder="Enter text here..."
+                      placeholder="Enter text here... (minimum 10 characters)"
                       value={formData.tasks}
                       onChange={handleInputChange}
                       rows={6}
                       maxLength={500}
-                      className="min-h-[120px]"
+                      className={`min-h-[120px] ${
+                        formErrors.tasks ? "border-red-500" : ""
+                      }`}
                     />
-                    <p className="text-xs text-gray-500">
-                      Keep this simple of 500 character
-                    </p>
+                    <div className="flex justify-between">
+                      <p className="text-xs text-gray-500">
+                        Min 10, max 500 characters
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formData.tasks.length}/500
+                      </p>
+                    </div>
+                    {formErrors.tasks && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {formErrors.tasks}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex gap-4 pt-4">
@@ -346,21 +592,22 @@ try {
                       type="button"
                       variant="outline"
                       className="flex-1 h-12 border-[#2B71F0] text-[#2B71F0] hover:bg-[#2563EB]/5"
+                      onClick={() => router.push("/Admin/Challenges")}
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       className="flex-1 h-12 bg-[#2B71F0] hover:bg-[#2563EB]/90"
-                      disabled={isLoading}
+                      disabled={isLoading || showSuccessMessage}
                     >
                       {isLoading ? "Creating..." : "Create Challenge"}
                     </Button>
                   </div>
 
-                  {errorMessage && (
+                  {apiErrorMessage && (
                     <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                      {errorMessage}
+                      {apiErrorMessage}
                     </div>
                   )}
                 </form>
