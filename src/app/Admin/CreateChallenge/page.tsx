@@ -313,13 +313,6 @@ export default function CreateChallengePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {showSuccessMessage && (
-                  <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg flex items-center">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Challenge created successfully! Redirecting...
-                  </div>
-                )}
-
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">Challenge/Hackathon Title</Label>
@@ -516,7 +509,7 @@ export default function CreateChallengePage() {
                     />
                     <div className="flex justify-between">
                       <p className="text-xs text-gray-500">
-                        Min 10, max 250 characters
+                        Keep this simple of 250 characters
                       </p>
                       <p className="text-xs text-gray-500">
                         {formData.description.length}/250
@@ -545,7 +538,7 @@ export default function CreateChallengePage() {
                     />
                     <div className="flex justify-between">
                       <p className="text-xs text-gray-500">
-                        Min 10, max 50 characters
+                        Keep this simple of 50 characters
                       </p>
                       <p className="text-xs text-gray-500">
                         {formData.brief.length}/50
@@ -574,7 +567,7 @@ export default function CreateChallengePage() {
                     />
                     <div className="flex justify-between">
                       <p className="text-xs text-gray-500">
-                        Min 10, max 500 characters
+                        Keep this simple of 500 characters
                       </p>
                       <p className="text-xs text-gray-500">
                         {formData.tasks.length}/500
@@ -608,6 +601,13 @@ export default function CreateChallengePage() {
                   {apiErrorMessage && (
                     <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
                       {apiErrorMessage}
+                    </div>
+                  )}
+
+                  {showSuccessMessage && (
+                    <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg flex items-center">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Challenge created successfully! Redirecting...
                     </div>
                   )}
                 </form>
