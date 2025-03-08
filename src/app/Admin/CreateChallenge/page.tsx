@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react"; // Removed useEffect from imports
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Sidebar, WhatsAppModalProvider } from "@/components/Sidebar_Admin";
@@ -47,6 +47,9 @@ interface FormErrors {
   [key: string]: string | undefined; // Index signature to allow any string key
 }
 
+// Define a type for the form field values
+type FormFieldValue = string | string[] | undefined;
+
 export default function CreateChallengePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -68,53 +71,61 @@ export default function CreateChallengePage() {
   const router = useRouter();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  // Function to validate a single field
-  const validateField = (name: string, value: any): string | null => {
+  // Function to validate a single field with proper typing
+  const validateField = (
+    name: string,
+    value: FormFieldValue
+  ): string | null => {
     switch (name) {
       case "title":
-        return !value?.trim() ? "Title is required" : null;
+        return !value?.toString().trim() ? "Title is required" : null;
       case "deadline":
         if (!value) return "Deadline is required";
 
         // Check if deadline is future date
-        const selectedDate = new Date(value);
+        const selectedDate = new Date(value.toString());
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Reset time to start of day for fair comparison
 
         return selectedDate <= today ? "Deadline must be a future date" : null;
 
       case "duration":
-        return !value?.trim() ? "Duration is required" : null;
+        return !value?.toString().trim() ? "Duration is required" : null;
       case "moneyPrize":
-        return !value?.trim() ? "Prize is required" : null;
+        return !value?.toString().trim() ? "Prize is required" : null;
       case "contactEmail":
-        if (!value?.trim()) return "Email is required";
-        return !/^\S+@\S+\.\S+$/.test(value)
+        if (!value?.toString().trim()) return "Email is required";
+        return !/^\S+@\S+\.\S+$/.test(value.toString())
           ? "Please enter a valid email address"
           : null;
       case "description":
-        if (!value?.trim()) return "Description is required";
-        if (value.length < 10)
+        if (!value?.toString().trim()) return "Description is required";
+        if (value.toString().length < 10)
           return "Description must be at least 10 characters";
-        if (value.length > 250)
+        if (value.toString().length > 250)
           return "Description must be 250 characters or less";
         return null;
       case "brief":
-        if (!value?.trim()) return "Brief is required";
-        if (value.length < 10) return "Brief must be at least 10 characters";
-        if (value.length > 50) return "Brief must be 50 characters or less";
+        if (!value?.toString().trim()) return "Brief is required";
+        if (value.toString().length < 10)
+          return "Brief must be at least 10 characters";
+        if (value.toString().length > 50)
+          return "Brief must be 50 characters or less";
         return null;
       case "tasks":
-        if (!value?.trim()) return "Tasks are required";
-        if (value.length < 10) return "Tasks must be at least 10 characters";
-        if (value.length > 500) return "Tasks must be 500 characters or less";
+        if (!value?.toString().trim()) return "Tasks are required";
+        if (value.toString().length < 10)
+          return "Tasks must be at least 10 characters";
+        if (value.toString().length > 500)
+          return "Tasks must be 500 characters or less";
         return null;
       case "skillsNeeded":
-        return !value || value.length === 0
+        return !value || (Array.isArray(value) && value.length === 0)
           ? "At least one skill is required"
           : null;
       case "otherSkill":
-        return formData.skillsNeeded.includes("Other") && !value?.trim()
+        return formData.skillsNeeded.includes("Other") &&
+          !value?.toString().trim()
           ? "Please specify the other skill"
           : null;
       case "seniority":
