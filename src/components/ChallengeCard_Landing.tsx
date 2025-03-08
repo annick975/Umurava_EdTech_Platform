@@ -1,4 +1,3 @@
-// ChallengeCard.tsx
 import Link from "next/link";
 import Image from "next/image";
 import type { FC } from "react";
@@ -27,7 +26,7 @@ const ChallengeCard: FC<Challenge> = ({
   duration,
 }) => {
   return (
-    <div className="bg-white rounded-xl p-4 border border-[#E4E7EC]">
+    <div className="bg-white rounded-xl p-4 border border-[#E4E7EC] flex flex-col h-full">
       <div className="relative mb-4">
         <div className="w-full aspect-video bg-[#2C71F0] rounded-xl flex items-center justify-center">
           <Image
@@ -61,12 +60,15 @@ const ChallengeCard: FC<Challenge> = ({
         </p>
       </div>
 
-      <div className="mb-4 py-2">
-        <p className="text-xs ">
+      <div className="mb-4">
+        <p className="text-xs">
           <span className="text-black font-medium">Timeline: </span>
           <span className="text-gray-600">{duration}</span>
         </p>
       </div>
+
+      {/* This pushes the divider and button to the bottom */}
+      <div className="flex-grow"></div>
 
       <div className="border-b border-[#E4E7EC] mb-4 -mx-4"></div>
 

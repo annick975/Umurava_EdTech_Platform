@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useGetChallengesQuery } from "@/lib/api/challengesApi";
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 6;
 
 const ChallengesPage: FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
