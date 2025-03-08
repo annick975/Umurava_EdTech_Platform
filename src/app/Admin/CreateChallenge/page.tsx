@@ -31,7 +31,6 @@ interface ApiError {
   message?: string;
 }
 
-// Properly define FormErrors interface to match your form fields
 interface FormErrors {
   title?: string;
   deadline?: string;
@@ -44,7 +43,7 @@ interface FormErrors {
   skillsNeeded?: string;
   otherSkill?: string;
   seniority?: string;
-  [key: string]: string | undefined; // Index signature to allow any string key
+  [key: string]: string | undefined; 
 }
 
 // Define a type for the form field values
